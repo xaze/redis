@@ -6306,7 +6306,7 @@ static int syncRead(int fd, char *ptr, ssize_t size, int timeout) {
     while(size) {
         if (aeWait(fd,AE_READABLE,1000) & AE_READABLE) {
             nread = read(fd,ptr,size);
-            if (nread == -1) return -1;
+            if (nread <= 0) return -1;
             ptr += nread;
             size -= nread;
             totread += nread;
@@ -6579,7 +6579,7 @@ static int syncWithMaster(void) {
         int nread, nwritten;
 
         nread = read(fd,buf,(dumpsize < 1024)?dumpsize:1024);
-        if (nread == -1) {
+        if (nread <= 0) {
             redisLog(REDIS_WARNING,"I/O error trying to sync with MASTER: %s",
                 strerror(errno));
             close(fd);
